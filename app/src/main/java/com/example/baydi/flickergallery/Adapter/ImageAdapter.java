@@ -1,6 +1,6 @@
 package com.example.baydi.flickergallery.Adapter;
 
-import android.app.ProgressDialog;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,18 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
+
 
 import com.example.baydi.flickergallery.Activites.FullImageActivity;
-import com.example.baydi.flickergallery.Activites.MainActivity;
 import com.example.baydi.flickergallery.Model.FlickerFeed;
 import com.example.baydi.flickergallery.R;
 
-import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by baydi on 1/14/17.
@@ -33,17 +31,21 @@ public class ImageAdapter extends BaseAdapter {
 
     private Context mContext;
     ArrayList<FlickerFeed> imageList;
-    private static LayoutInflater inflater=null;
+    private static LayoutInflater inflater;
+
 
     public ImageAdapter(){
         mContext = null;
         imageList = new ArrayList<FlickerFeed>();
+        inflater = null;
+
     }
 
     public ImageAdapter(Context c , ArrayList<FlickerFeed>imageList){
         mContext = c;
         this.imageList = imageList;
         inflater = ( LayoutInflater )mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     }
 
     @Override
@@ -98,6 +100,7 @@ public class ImageAdapter extends BaseAdapter {
         });
         return rowView;
     }
+
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;

@@ -1,15 +1,13 @@
 package com.example.baydi.flickergallery.Activites;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -25,7 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static String url = "https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1";
 
-    ArrayList<FlickerFeed> flickerFeeds;
+    ArrayList<FlickerFeed> flickerFeeds,searchFeeds;
+    ImageAdapter imageAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private void connectToXML(){
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
         gridView = (GridView)findViewById(R.id.gridView);
-        searchView = (SearchView)findViewById(R.id.searchView);
+        searchView = (SearchView) findViewById(R.id.searchView);
         noRecordTextView = (TextView)findViewById(R.id.noRecordTextView);
     }
 
@@ -65,6 +64,42 @@ public class MainActivity extends AppCompatActivity {
                 new GetFlickerFeed().execute();
             }
         });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String newText) {
+                // filter your adapter here
+                searchFeeds = new ArrayList<FlickerFeed>();
+                initialiseAdapter(searchFeeds);
+                for(int lop = 0 ; lop < flickerFeeds.size() ; lop ++){
+                    FlickerFeed feed = flickerFeeds.get(lop);
+                    if(feed.getTag().contains(newText)){
+                        searchFeeds.add(feed);
+                    }
+                }
+                initialiseAdapter(searchFeeds);
+                return false;
+            }
+
+            @Override
+
+            public boolean onQueryTextChange(String query) {
+                // TODO Auto-generated method stub
+
+                searchFeeds = new ArrayList<FlickerFeed>();
+                initialiseAdapter(searchFeeds);
+                for(int lop = 0 ; lop < flickerFeeds.size() ; lop ++){
+                    FlickerFeed feed = flickerFeeds.get(lop);
+                    if(feed.getTag().contains(query)){
+                        searchFeeds.add(feed);
+                    }
+                }
+                initialiseAdapter(searchFeeds);
+
+                return false;
+            }
+        });
     }
 
     private void initialiseAdapter(ArrayList<FlickerFeed> flickerFeeds){
@@ -73,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
         else
         {
             noRecordTextView.setVisibility(View.GONE);
-            gridView.setAdapter(new ImageAdapter(this,flickerFeeds));
+            imageAdapter = new ImageAdapter(this,flickerFeeds);
+            gridView.setAdapter(imageAdapter);
         }
         swipeRefreshLayout.setRefreshing(false);
     }
